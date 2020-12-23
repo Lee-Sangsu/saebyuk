@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from saebyuk.accounts.views import kakao_login, kakao_callback, KakaoToDjangoLogin
+from saebyuk.accounts.views import kakao_login, KakaoToDjangoLogin, kakao_sign_up
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,10 +25,9 @@ urlpatterns = [
     path('account/', include('rest_auth.urls')),
     path('account/registration/', include('rest_auth.registration.urls')),
 
-
-    path('account/login/kakao/', kakao_login, name='kakao_login'),
-    path('account/login/kakao/callback/',
-         kakao_callback, name='kakao_callback'),
+    path('account/login/kakao/',
+         kakao_login, name='kakao_sign_in'),
+    path('account/sign-up/kakao/', kakao_sign_up, name="kakao_sign_up"),
     path('account/login/kakao/todjango/',
          KakaoToDjangoLogin.as_view(), name='kakao_todjango')
 ]

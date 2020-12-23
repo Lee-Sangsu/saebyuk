@@ -3,8 +3,9 @@ import os
 import environ
 
 env = environ.Env()
-
 environ.Env.read_env()
+
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE",)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,7 +13,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = '*'
 
 
 # Application definition
@@ -24,6 +25,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'corsheaders',
 
     'saebyuk.accounts',
     'rest_framework',
@@ -45,7 +48,33 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CSRF_HEADER_NAME = "HTTP_CMNAIMAKAASDFGBVIASFSDVXZVASDELFIEERNZREND"
+CSRF_COOKIE_NAME = "welcometothegschoolbabe"
+
+
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ALLOWED_ORIGINS = (
+    'http://localhost:8000',
+    'http://localhost:3000',
+    'http://192.168.219.101:3000'
+)
+
 
 ROOT_URLCONF = 'saebyuk.urls'
 
@@ -87,7 +116,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
