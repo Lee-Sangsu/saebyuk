@@ -69,7 +69,6 @@ def kakao_login(request):
     try:
         # 가입된 사용자인 경우, jwt 제공
         user_in_db = UserModel.objects.get(kakao_id=kakao_id)
-        print(user_in_db)
         data = {'access_token': access_token}
         accept = requests.post(
             f"http://127.0.0.1:8000/account/login/kakao/todjango/", data=data)
@@ -79,8 +78,6 @@ def kakao_login(request):
         UserModel.objects.filter(kakao_id=kakao_id).update(
             kakao_nickname=nickname, profile_image=profile_image)
         serialized_user_info = UserSerializer(user_in_db, many=False)
-
-        print(serialized_user_info.data)
         response = {'accept_jwt': accept_jwt,
                     'user': serialized_user_info.data}
         return Response(data=response, status=200)
