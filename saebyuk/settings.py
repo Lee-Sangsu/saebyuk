@@ -28,7 +28,7 @@ INSTALLED_APPS = [
 
     'corsheaders',
 
-    'saebyuk.accounts',
+    'saebyuk.saebyuk',
     'rest_framework',
     'rest_auth',
     'rest_framework.authtoken',

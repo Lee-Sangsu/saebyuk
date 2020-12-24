@@ -75,12 +75,23 @@ def kakao_login(request):
         accept_json = accept.json()
         accept_jwt = accept_json.get("key")
         # 사용자의 이미지가 변경된 경우, 사진 업데이트
-        UserModel.objects.filter(kakao_id=kakao_id).update(
-            kakao_nickname=nickname, profile_image=profile_image)
-        serialized_user_info = UserSerializer(user_in_db, many=False)
-        response = {'accept_jwt': accept_jwt,
-                    'user': serialized_user_info.data}
-        return Response(data=response, status=200)
+        if profile_image is None:
+            user_in_db.kakao_nickname = nickname
+            user_in_db.profile_image = ''
+            user_in_db.save()
+            serialized_user_info = UserSerializer(user_in_db, many=False)
+            response = {'accept_jwt': accept_jwt,
+                        'user': serialized_user_info.data}
+            return Response(data=response, status=200)
+        else:
+            user_in_db.kakao_nickname = nickname
+            user_in_db.profile_image = profile_image
+            user_in_db.save()
+            serialized_user_info = UserSerializer(user_in_db, many=False)
+            response = {'accept_jwt': accept_jwt,
+                        'user': serialized_user_info.data}
+            return Response(data=response, status=200)
+
     except UserModel.DoesNotExist:
         response = {'kakao_profile': profile,
                     'kakao_id': kakao_id, 'access_token': access_token}
