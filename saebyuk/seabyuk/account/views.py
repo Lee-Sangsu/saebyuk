@@ -6,7 +6,7 @@ from rest_framework.decorators import renderer_classes, api_view
 from rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.kakao import views as kakao_views
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from .models import UserModel
+from ..models import UserModel
 from .serializer import UserSerializer
 import urllib
 import requests
