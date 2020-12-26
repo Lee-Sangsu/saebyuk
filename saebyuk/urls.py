@@ -4,7 +4,10 @@ from saebyuk.seabyuk.account.views import kakao_login, KakaoToDjangoLogin, kakao
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', include('django.contrib.auth.urls')),
+
+    path('api-auth/', include("rest_framework.urls")),
+    path('api/rest-auth/', include("rest_auth.urls")),
+
     path('account/', include('saebyuk.seabyuk.account.urls')),
     path('book/', include('saebyuk.seabyuk.book.urls')),
 ]

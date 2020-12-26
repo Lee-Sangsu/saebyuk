@@ -12,14 +12,22 @@ class Book(models.Model):
         ordering = ['isbn']
 
 
+class RecommendedBook(models.Model):
+    book = models.ForeignKey(
+        Book, on_delete=models.CASCADE, related_query_name='recommended_book')
+    # array field로 나중에 바꿔라.
+    is_recommended = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'recommended_book'
+
+
 class UserModel(models.Model):
     kakao_id = models.IntegerField(unique=True)
     g_school_nickname = models.CharField(max_length=3, default='')
     kakao_nickname = models.CharField(max_length=20, default='')
     profile_image = models.CharField(max_length=200, default='')
     is_manager = models.BooleanField(default=False)
-    # https://docs.djangoproject.com/en/3.1/topics/db/examples/many_to_many/ 로 쿼리하면 됨.
-    love_book = models.ManyToManyField(Book, related_query_name='loved_book')
     objects = models.Manager()
 
     class Meta:
@@ -45,6 +53,16 @@ class BookInfo(models.Model):
 
     class Meta:
         db_table = 'book_info'
+
+
+class LoveBook(models.Model):
+    book = models.ForeignKey(
+        Book, on_delete=models.CASCADE, related_query_name='loved_book')
+    user = models.ForeignKey(
+        UserModel, on_delete=models.CASCADE, related_query_name='lover')
+
+    class Meta:
+        db_table = 'book_loved'
 
 
 class BorrowBooks(models.Model):
@@ -73,10 +91,6 @@ class BookComment(models.Model):
 
     class Meta:
         db_table = 'book_comment'
-
-
-class RecommendedBook(models.Model):
-    pass
 
 
 class RequestedBook(models.Model):
