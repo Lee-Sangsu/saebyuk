@@ -1,5 +1,6 @@
 from django.db import models
 # Create your models here.
+from django.contrib.postgres.fields import ArrayField
 
 
 class Book(models.Model):
@@ -17,6 +18,7 @@ class RecommendedBook(models.Model):
         Book, on_delete=models.CASCADE, related_query_name='recommended_book')
     # array field로 나중에 바꿔라.
     is_recommended = models.BooleanField(default=False)
+    able_to_borrow = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'recommended_book'
@@ -46,7 +48,7 @@ class BookInfo(models.Model):
     publisher = models.CharField(max_length=25)
     page = models.IntegerField()
     published_date = models.DateTimeField()
-    keyword = models.CharField(max_length=30)
+    keyword = ArrayField(models.CharField(max_length=30))
     subtitle = models.CharField(max_length=25)
     description = models.CharField(max_length=100)
     purchase_link = models.CharField(max_length=200, null=True)
@@ -100,3 +102,6 @@ class RequestedBook(models.Model):
     author = models.CharField(max_length=25)
     interest_parts = models.CharField(max_length=25)
     others = models.CharField(max_length=30)
+
+    class Meta:
+        db_table = 'requested_book'

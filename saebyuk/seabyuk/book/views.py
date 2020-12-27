@@ -2,23 +2,26 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Book, UserModel, BookInfo, BorrowBooks, BookComment, RequestedBook, RecommendedBook
 from rest_framework.permissions import IsAuthenticated
+from .serializers import MainBookSerializer, BookInfoSerializer
 
 
 class GetMainBooks(APIView):
     def get(self, request):
-        no_filter_books = someserializer(
-            Book.objects.all().order_by('-id')[:6])
-        recommended_books = someserializer()
-        repsonse = {"recommended_book": recommended_books,
-                    "no_filter_books": no_filter_books}
+        no_filter_books = Book.objects.all().order_by('-id')[:6]
+        no_filtered_books = MainBookSerializer(no_filter_books, many=True)
+        # recommended_books =
+
+        repsonse = {
+            # "recommended_book": recommended_books,
+            "no_filter_books": no_filtered_books}
         return Response(repsonse, status=200)
 
 
 class FilterdBooks(APIView):
     def get(self, request):
         filter = request.data.get("filter")
-        filtered_books = someserializer(
-            BookInfo.objects.filter(keyword=filter)).data 
+        filtered_books = BookInfoSerializer(
+            BookInfo.objects.filter(keyword__contains=filter)).data  # annotate isbn 해야 해
         return Response(filtered_books, status=200)
 
 
@@ -26,8 +29,8 @@ class SpecificInfoOfBook(APIView):
     def get(self, request):
         isbn = request.data.get("isbn")
         book = Book.objects.get(isbn=isbn)
-        book_info = someserializer(
-            BookInfo.objects.get(book=book)).data 
+        book_info = BookInfoSerializer(
+            BookInfo.objects.get(book=book)).data
         return Response(book_info, status=200)
 
 
@@ -35,20 +38,18 @@ class LoveBook(APIView):
     def post(self, request):
         permission_class = [IsAuthenticated]
         g_nickname = request.data.get("g_school_nickname")
-        user = UserModel.objects.get(g_school_nickname = g_nickname)
+        user = UserModel.objects.get(g_school_nickname=g_nickname)
         isbn = request.data.get("isbn")
         book = Book.objects.filter(isbn=isbn)
         LoveBook(book=book, user=user).save()
         return Response("successfully written", status=200)
 
 
-
-
 class BorrowBook(APIView):
     def post(self, request):
         permission_class = [IsAuthenticated]
         g_nickname = request.data.get("g_school_nickname")
-        user = UserModel.objects.get(g_school_nickname = g_nickname)
+        user = UserModel.objects.get(g_school_nickname=g_nickname)
         BorrowBooks(book=book, user=user).save()
         return Response("successfully written", status=200)
 
