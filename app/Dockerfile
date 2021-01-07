@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED 1
 
 # install dependencies
 RUN pip install --upgrade pip
-COPY . .
+# COPY . .
 
 # For cffi&cryptography's dependency problem + postgresql-dev for psycopg2-binary install problem.
 RUN apk update \
@@ -18,8 +18,11 @@ RUN apk update \
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY ./entrypoint.sh .
+# COPY ./entrypoint.sh .
 # copy project
 COPY . .
 
-ENTRYPOINT [ "/usr/src/app/entrypoint.prod.sh" ]
+EXPOSE 8000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "saebyuk.wsgi:application"]  
+# ENTRYPOINT [ "/usr/src/app/entrypoint.prod.sh" ]
