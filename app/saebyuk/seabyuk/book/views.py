@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from ..models import Book, UserModel, BookInfo, BorrowBooks, BookComment, RequestedBook, RecommendedBook
 from rest_framework.permissions import IsAuthenticated
@@ -15,7 +16,8 @@ class GetMainBooks(APIView):
 
         repsonse = {
             # "recommended_book": recommended_books,
-            "no_filter_books": no_filtered_books}
+            "no_filter_books": no_filtered_books.data}
+
         return Response(repsonse, status=200)
 
 
@@ -39,7 +41,7 @@ class SpecificInfoOfBook(APIView):
 
 class LoveBook(APIView):
     def post(self, request):
-        permission_class = [IsAuthenticated]
+        # permission_class = [IsAuthenticated]
         g_nickname = request.data.get("g_school_nickname")
         user = UserModel.objects.get(g_school_nickname=g_nickname)
         isbn = request.data.get("isbn")
@@ -50,7 +52,7 @@ class LoveBook(APIView):
 
 class BorrowBook(APIView):
     def post(self, request):
-        permission_class = [IsAuthenticated]
+        # permission_class = [IsAuthenticated]
         user = UserModel.objects.get(
             g_school_nickname=request.data.get("g_school_nickname"))
         book = Book.objects.get(isbn=request.data.get("isbn"))
@@ -60,7 +62,7 @@ class BorrowBook(APIView):
 
 class ReturnBook(APIView):
     def put(self, request):
-        permission_class = [IsAuthenticated]
+        # permission_class = [IsAuthenticated]
         user = UserModel.objects.get(
             g_school_nickname=request.data.get("g_school_nickname"))
         book = Book.objects.get(isbn=request.data.get("isbn"))
@@ -94,7 +96,7 @@ class RequestBook(APIView):
 
 class RegisterNewBook(APIView):
     def post(self, request):
-        permission_class = [IsAuthenticated]  # is_manager로 구분해야 함.
+        # permission_class = [IsAuthenticated]  # is_manager로 구분해야 함.
         data = request.data
         isbn = data.get("isbn")
         if Book.objects.filter(isbn=isbn).exists():
@@ -123,7 +125,7 @@ class RegisterNewBook(APIView):
 
 class RegisterRecommendBook(APIView):
     def post(self, request):
-        permission_class = [IsAuthenticated]  # is_manager로 구분해야 함.
+        # permission_class = [IsAuthenticated]  # is_manager로 구분해야 함.
         data = request.data
         isbn = data.get("isbn")
         try:

@@ -24,6 +24,8 @@ def kakao_sign_up(request):
     data = body.get("data")
 
     if UserModel.objects.filter(kakao_id=data.get("kakao_id")).exists():
+        return Response({"message": "User already exists"}, status=400)
+    else:
         user_model = UserModel(
             kakao_id=data.get("kakao_id"),
             g_school_nickname=data.get("g_school_nickname"),
@@ -32,14 +34,13 @@ def kakao_sign_up(request):
         )
         user_model.save()
 
-        accept = requests.post(
-            f"http://127.0.0.1:8000/account/login/kakao/todjango/", data={'access_token': data.get("access_token")})
-        accept_json = accept.json()
-        accept_jwt = accept_json.get("key")
+        # accept = requests.post(
+        #     f"http://127.0.0.1:8000/account/login/kakao/todjango/", data={'access_token': data.get("access_token")})
+        # accept_json = accept.json()
+        # accept_jwt = accept_json.get("key")
+        accept_jwt = "jwt key"
 
         return Response(accept_jwt, status=201)
-    else:
-        return Response({"message": "User already exists"}, status=400)
 
 
 # access token 받고 로그인
@@ -70,10 +71,11 @@ def kakao_login(request):
         # 가입된 사용자인 경우, jwt 제공
         user_in_db = UserModel.objects.get(kakao_id=kakao_id)
         data = {'access_token': access_token}
-        accept = requests.post(
-            f"http://127.0.0.1:8000/account/login/kakao/todjango/", data=data)
-        accept_json = accept.json()
-        accept_jwt = accept_json.get("key")
+        # accept = requests.post(
+        #     f"http://127.0.0.1:8000/account/login/kakao/todjango/", data=data)
+        # accept_json = accept.json()
+        # accept_jwt = accept_json.get("key")
+        accept_jwt = "jwt key"
         # 사용자의 이미지가 변경된 경우, 사진 업데이트
         if profile_image is None:
             user_in_db.kakao_nickname = nickname
