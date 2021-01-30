@@ -25,7 +25,7 @@ class FilterdBooks(APIView):
     def get(self, request):
         filter = request.data.get("filter")
         filtered_books = BookInfoSerializer(
-            BookInfo.objects.filter(keyword__contains=filter)).data  # annotate isbn 해야 해
+            BookInfo.objects.filter(genre__contains=filter)).data  # annotate isbn 해야 해
         return Response(filtered_books, status=200)
 
 
@@ -97,7 +97,8 @@ class RequestBook(APIView):
 class RegisterNewBook(APIView):
     def post(self, request):
         # permission_class = [IsAuthenticated]  # is_manager로 구분해야 함.
-        data = request.data
+        data = request.data.get("data")
+        print(data)
         isbn = data.get("isbn")
         if Book.objects.filter(isbn=isbn).exists():
             return Response({"message": "해당 isbn을 지닌 책이 이미 있습니다."}, status=400)

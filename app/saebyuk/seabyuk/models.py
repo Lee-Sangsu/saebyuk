@@ -4,7 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 
 
 class Book(models.Model):
-    isbn = models.IntegerField(unique=True)
+    isbn = models.CharField(max_length=20, default='', unique=True)
     # https://docs.djangoproject.com/en/3.1/ref/forms/widgets/#django.forms.DateTimeInput 포맷으로 인풋
     registered_date = models.DateTimeField(auto_now=True)
 
@@ -14,7 +14,7 @@ class Book(models.Model):
 
 
 class RecommendedBook(models.Model):
-    isbns = ArrayField(models.IntegerField(null=False), default=[])
+    isbns = ArrayField(models.CharField(null=False), default=[])
 
     class Meta:
         db_table = 'recommended_book'
@@ -43,10 +43,11 @@ class BookInfo(models.Model):
     thumbnail_image = models.CharField(max_length=200)
     publisher = models.CharField(max_length=25)
     page = models.IntegerField()
-    published_date = models.DateTimeField()
+    published_date = models.CharField(max_length=20)
+    genre = ArrayField(models.CharField(max_length=30, default=""))
     keyword = ArrayField(models.CharField(max_length=30))
     subtitle = models.CharField(max_length=25)
-    description = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000)
     purchase_link = models.CharField(max_length=200, null=True)
 
     class Meta:
