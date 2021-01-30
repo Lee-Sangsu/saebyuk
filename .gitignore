@@ -1,6 +1,6 @@
 .env
 .env.prod
 .env.prod.db
-
+.yml
 docker-compose.yml
 docker-compose.prod.yml
