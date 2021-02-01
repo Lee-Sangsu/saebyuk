@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import GetMainBooks, FilterdBooks, SpecificInfoOfBook, LoveBook, BorrowBook, ReturnBook, UserBorrowedBook, RequestBook, RegisterNewBook, RegisterRecommendBook, CheckBookPresentCondition
+from .views import GetMainBooks, FilterdBooks, SpecificInfoOfBook, LoveBook, BorrowBook, ReturnBook, UserBorrowedBook, RequestBook, RegisterNewBook, RegisterRecommendBook, CheckBookPresentCondition, faq
 
 urlpatterns = [
     path('main/', GetMainBooks.as_view()),
@@ -13,4 +13,5 @@ urlpatterns = [
     path('register/new/', RegisterNewBook.as_view()),
     path('register/recommend/', RegisterRecommendBook.as_view()),
     path('present-condition/', CheckBookPresentCondition.as_view()),
+    path("faq/", faq, name="faq")
 ]

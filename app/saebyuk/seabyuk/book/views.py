@@ -1,10 +1,17 @@
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from ..models import Book, UserModel, BookInfo, BorrowBooks, BookComment, RequestedBook, RecommendedBook
 from rest_framework.permissions import IsAuthenticated
 from .serializers import MainBookSerializer, BookInfoSerializer
 from datetime import datetime
+from notion.client import NotionClient
+from notion.block import TodoBlock, TextBlock, PageBlock
+import json
+import environ
+env = environ.Env()
+environ.Env.read_env()
 
 
 class GetMainBooks(APIView):
@@ -138,3 +145,29 @@ class RegisterRecommendBook(APIView):
 
 class CheckBookPresentCondition(APIView):
     pass
+
+
+@api_view(['POST'])
+def faq(request):
+    try:
+        body = json.loads(request.body)
+        data = body.get("data")
+
+        title = data.get("title")
+        text_body = data.get("body")
+
+        # login
+        token_v2 = f"{env('NOTION_TOKEN')}"
+        client = NotionClient(token_v2=token_v2)
+
+        # faq 페이지 URL
+        url = f"{env('NOTION_PAGE_URL')}"
+        page = client.get_block(url)
+
+        new_page_block = page.children.add_new(PageBlock, title=title)
+        gotten_new_page_block = client.get_block(new_page_block.id)
+        gotten_new_page_block.children.add_new(TextBlock, title=text_body)
+        return Response(data="good", status=200)
+
+    except:
+        return Response(data="sorry, we have a problem", status=400)
