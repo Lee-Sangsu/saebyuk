@@ -10,4 +10,5 @@ urlpatterns = [
 
     path('account/', include('saebyuk.seabyuk.account.urls')),
     path('book/', include('saebyuk.seabyuk.book.urls')),
+    # path('faq/', )
 ]

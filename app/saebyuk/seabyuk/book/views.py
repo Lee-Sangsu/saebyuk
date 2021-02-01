@@ -10,16 +10,12 @@ from datetime import datetime
 class GetMainBooks(APIView):
     def get(self, request):
         no_filter_books = BookInfo.objects.all().order_by('-book__id')[:6]
-
         no_filtered_books = BookInfoSerializer(no_filter_books, many=True)
+        # repsonse = {
+        #     # "recommended_book": recommended_books,
+        #     "no_filter_books": no_filtered_books.data}
 
-        print(no_filtered_books.data)
-
-        repsonse = {
-            # "recommended_book": recommended_books,
-            "no_filter_books": no_filtered_books.data}
-
-        return Response(repsonse, status=200)
+        return Response(no_filtered_books.data, status=200)
 
 
 class FilterdBooks(APIView):
@@ -82,14 +78,16 @@ class UserBorrowedBook(APIView):
 
 class RequestBook(APIView):
     def post(self, request):
+        data = request.data.get("data")
+        # print(data.get("g_school_nickname"))
         user = UserModel.objects.get(
-            g_school_nickname=request.data.get("g_school_nickname"))
+            g_school_nickname=data.get("g_school_nickname"))
         request_book = RequestedBook(
             user=user,
-            book_title=request.data.get("book_title"),
-            author=request.data.get("author"),
-            interest_parts=request.data.get("interest_parts"),
-            others=request.data.get("others")
+            book_title=data.get("book_title"),
+            author=data.get("author"),
+            interest_parts=data.get("interest_parts"),
+            others=data.get("others")
         )
         request_book.save()
         return Response("successfully edited", status=200)
@@ -99,7 +97,7 @@ class RegisterNewBook(APIView):
     def post(self, request):
         # permission_class = [IsAuthenticated]  # is_manager로 구분해야 함.
         data = request.data.get("data")
-        print(data)
+        # print(data)
         isbn = data.get("isbn")
         if Book.objects.filter(isbn=isbn).exists():
             return Response({"message": "해당 isbn을 지닌 책이 이미 있습니다."}, status=400)
