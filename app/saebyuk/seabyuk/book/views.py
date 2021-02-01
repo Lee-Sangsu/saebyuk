@@ -9,10 +9,11 @@ from datetime import datetime
 
 class GetMainBooks(APIView):
     def get(self, request):
-        no_filter_books = Book.objects.all().order_by('-id')[:6]
-        no_filtered_books = MainBookSerializer(no_filter_books, many=True)
-        # recommended_books = RecommendedBook.objects.latest()
-        # for i in recommended_books.isbns:
+        no_filter_books = BookInfo.objects.all().order_by('-book__id')[:6]
+
+        no_filtered_books = BookInfoSerializer(no_filter_books, many=True)
+
+        print(no_filtered_books.data)
 
         repsonse = {
             # "recommended_book": recommended_books,
@@ -114,6 +115,7 @@ class RegisterNewBook(APIView):
                 publisher=data.get("publisher"),
                 page=data.get("page"),
                 published_date=data.get("published_date"),
+                genre=data.get("genre"),
                 keyword=data.get("keyword"),
                 subtitle=data.get("subtitle"),
                 description=data.get("description"),

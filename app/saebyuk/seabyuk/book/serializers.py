@@ -16,8 +16,6 @@ class BookInfoSerializer(serializers.ModelSerializer):
 
 
 class MainBookSerializer(serializers.ModelSerializer):
-    book_info = BookInfoSerializer(many=False, read_only=True)
-
     class Meta:
         model = Book
-        fields = ['isbn', 'registered_date', 'book_info']
+        fields = ['isbn', 'registered_date']
