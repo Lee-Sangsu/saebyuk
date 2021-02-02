@@ -8,14 +8,15 @@ class BorrowedBooksSerializer(serializers.ModelSerializer):
         fields = ['book', 'borrowed_at', 'is_overdue']
 
 
+class MainBookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ['isbn', 'registered_date', 'borrow_available']
+
+
 class BookInfoSerializer(serializers.ModelSerializer):
+    book = MainBookSerializer()
 
     class Meta:
         model = BookInfo
         fields = '__all__'
-
-
-class MainBookSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Book
-        fields = ['isbn', 'registered_date']

@@ -18,9 +18,7 @@ class GetMainBooks(APIView):
     def get(self, request):
         no_filter_books = BookInfo.objects.all().order_by('-book__id')[:6]
         no_filtered_books = BookInfoSerializer(no_filter_books, many=True)
-        # repsonse = {
-        #     # "recommended_book": recommended_books,
-        #     "no_filter_books": no_filtered_books.data}
+        # need to add 대출 가능 여부
 
         return Response(no_filtered_books.data, status=200)
 
@@ -59,7 +57,8 @@ class BorrowBook(APIView):
         # permission_class = [IsAuthenticated]
         user = UserModel.objects.get(
             g_school_nickname=request.data.get("g_school_nickname"))
-        book = Book.objects.get(isbn=request.data.get("isbn"))
+        book = Book.objects.get(isbn=request.data.get(
+            "isbn")).update(borrow_available=False)
         BorrowBooks(book=book, user=user).save()
         return Response("successfully written", status=200)
 
@@ -69,7 +68,9 @@ class ReturnBook(APIView):
         # permission_class = [IsAuthenticated]
         user = UserModel.objects.get(
             g_school_nickname=request.data.get("g_school_nickname"))
-        book = Book.objects.get(isbn=request.data.get("isbn"))
+        book = Book.objects.get(isbn=request.data.get(
+            "isbn")).update(borrow_available=True)
+
         BorrowBooks.objects.filter(borrowed_at=request.data.get(
             "borrowed_at")).update(returned_at=datetime.now())
         return Response("successfully edited", status=200)

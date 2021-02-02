@@ -7,6 +7,7 @@ class Book(models.Model):
     isbn = models.CharField(max_length=20, default='', unique=True)
     # https://docs.djangoproject.com/en/3.1/ref/forms/widgets/#django.forms.DateTimeInput 포맷으로 인풋
     registered_date = models.DateTimeField(auto_now=True)
+    borrow_available = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'book'
