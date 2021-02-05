@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ..models import Book, UserModel, BookInfo, BorrowBooks, BookComment, RequestedBook, RecommendedBook
 from rest_framework.permissions import IsAuthenticated
-from .serializers import MainBookSerializer, BookInfoSerializer
+from .serializers import MainBookSerializer,  BookInfoSerializer, BorrowedBooksSerializer
 from datetime import datetime
 from notion.client import NotionClient
 from notion.block import TodoBlock, TextBlock, PageBlock
@@ -53,35 +53,48 @@ class LoveBook(APIView):
 
 
 class BorrowBook(APIView):
-    def post(self, request):
+    def post(self, request, isbn):
         # permission_class = [IsAuthenticated]
-        user = UserModel.objects.get(
-            g_school_nickname=request.data.get("g_school_nickname"))
-        book = Book.objects.get(isbn=request.data.get(
-            "isbn")).update(borrow_available=False)
-        BorrowBooks(book=book, user=user).save()
-        return Response("successfully written", status=200)
+        try:
+            data = request.data.get("data")
+            user = UserModel.objects.get(
+                g_school_nickname=data.get("g_school_nickname"))
+            get_book_for_update = Book.objects.filter(isbn=isbn)
+            get_book_for_update.update(borrow_available=False)
+
+            get_book_for_borrow = Book.objects.get(isbn=isbn)
+            borrow_book = BorrowBooks(book=get_book_for_borrow, user=user)
+            borrow_book.save()
+
+            return Response("successfully written", status=200)
+        except:
+            return Response("successfully written", status=200)
 
 
 class ReturnBook(APIView):
     def put(self, request):
         # permission_class = [IsAuthenticated]
+        data = request.data
         user = UserModel.objects.get(
-            g_school_nickname=request.data.get("g_school_nickname"))
-        book = Book.objects.get(isbn=request.data.get(
+            g_school_nickname=data.get("g_school_nickname"))
+        book = Book.objects.get(isbn=data.get(
             "isbn")).update(borrow_available=True)
-
-        BorrowBooks.objects.filter(borrowed_at=request.data.get(
-            "borrowed_at")).update(returned_at=datetime.now())
+        BorrowBooks.objects.filter(book=book).filter(
+            user=user).update(returned_at=datetime.now())
         return Response("successfully edited", status=200)
 
 
 class UserBorrowedBook(APIView):
-    def get(self, request):
+    def get(self, request, nickname):
+        print(nickname)
         user = UserModel.objects.get(
-            g_school_nickname=request.data.get("g_school_nickname"))
-        borrowed_book = BorrowBooks.objects.filter(user=user, returned_at=None)
-        return Response(borrowed_book, status=200)
+            g_school_nickname=nickname)
+        borrowed_book = BorrowBooks.objects.filter(
+            user=user).filter(returned_at=None)
+        serialized_borrowed_books = BorrowedBooksSerializer(
+            borrowed_book, many=True)
+        print(BorrowedBooksSerializer())
+        return Response(serialized_borrowed_books.data, status=200)
 
 
 class RequestBook(APIView):
@@ -98,7 +111,7 @@ class RequestBook(APIView):
             others=data.get("others")
         )
         request_book.save()
-        return Response("successfully edited", status=200)
+        return Response("successfully registered", status=200)
 
 
 class RegisterNewBook(APIView):

@@ -8,7 +8,7 @@ urlpatterns = [
     path('love/', LoveBook.as_view()),
     path('borrow/<int:isbn>/', BorrowBook.as_view()),
     path('return/', ReturnBook.as_view()),
-    path('borrowed/', UserBorrowedBook.as_view()),
+    path('borrowed/<str:nickname>/', UserBorrowedBook.as_view()),
     path('request/', RequestBook.as_view()),
     path('register/new/', RegisterNewBook.as_view()),
     path('register/recommend/', RegisterRecommendBook.as_view()),
