@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from ..models import Book, UserModel, BookInfo, BorrowBooks, BookComment, RequestedBook, RecommendedBook
+from ..models import Book, UserModel, BookInfo, BorrowBooks, BookComment, RequestedBook
 from rest_framework.permissions import IsAuthenticated
 from .serializers import MainBookSerializer,  BookInfoSerializer, BorrowedBooksSerializer
 from datetime import datetime
@@ -16,8 +16,8 @@ environ.Env.read_env()
 
 class GetMainBooks(APIView):
     def get(self, request):
-        no_filter_books = BookInfo.objects.all().order_by('-book__id')[:6]
-        no_filtered_books = BookInfoSerializer(no_filter_books, many=True)
+        no_filter_books = Book.objects.all().order_by('-id')[:6]
+        no_filtered_books = MainBookSerializer(no_filter_books, many=True)
         # need to add 대출 가능 여부
 
         return Response(no_filtered_books.data, status=200)
@@ -68,32 +68,37 @@ class BorrowBook(APIView):
 
             return Response("successfully written", status=200)
         except:
-            return Response("successfully written", status=200)
+            return Response("sry", status=400)
 
 
 class ReturnBook(APIView):
     def put(self, request):
         # permission_class = [IsAuthenticated]
-        data = request.data
-        user = UserModel.objects.get(
-            g_school_nickname=data.get("g_school_nickname"))
-        book = Book.objects.get(isbn=data.get(
-            "isbn")).update(borrow_available=True)
-        BorrowBooks.objects.filter(book=book).filter(
-            user=user).update(returned_at=datetime.now())
-        return Response("successfully edited", status=200)
+        try:
+            data = request.data.get("data")
+            print(data)
+            user = UserModel.objects.get(
+                g_school_nickname=data.get("g_school_nickname"))
+            for i in data.get("isbn"):
+                book = Book.objects.filter(
+                    isbn=i).update(borrow_available=True)
+                BorrowBooks.objects.filter(book=book).filter(
+                    user=user).update(returned_at=datetime.now())
+            return Response("successfully edited", status=200)
+        except:
+            return Response("sry", status=400)
 
 
 class UserBorrowedBook(APIView):
     def get(self, request, nickname):
-        print(nickname)
+        # print(nickname)
         user = UserModel.objects.get(
             g_school_nickname=nickname)
         borrowed_book = BorrowBooks.objects.filter(
             user=user).filter(returned_at=None)
         serialized_borrowed_books = BorrowedBooksSerializer(
             borrowed_book, many=True)
-        print(BorrowedBooksSerializer())
+        # print(BorrowedBooksSerializer())
         return Response(serialized_borrowed_books.data, status=200)
 
 
@@ -123,11 +128,7 @@ class RegisterNewBook(APIView):
         if Book.objects.filter(isbn=isbn).exists():
             return Response({"message": "해당 isbn을 지닌 책이 이미 있습니다."}, status=400)
         else:
-            book = Book(isbn=isbn)
-            book.save()
-            print(book)
             book_info = BookInfo(
-                book=book,
                 title=data.get("title"),
                 author=data.get("author"),
                 thumbnail_image=data.get("thumbnail_image"),
@@ -141,20 +142,22 @@ class RegisterNewBook(APIView):
                 purchase_link=data.get("purchase_link")
             )
             book_info.save()
+            book = Book(isbn=isbn, book_info=book_info)
+            book.save()
 
             return Response(status=200)
 
 
-class RegisterRecommendBook(APIView):
-    def post(self, request):
-        # permission_class = [IsAuthenticated]  # is_manager로 구분해야 함.
-        data = request.data
-        isbn = data.get("isbn")
-        try:
-            RecommendedBook(isbns=isbn).save()
-            return Response({"message": "성공적으로 등록되었습니다."}, status=200)
-        except:
-            return Response({"해당 isbn을 지닌 책이 없습니다."}, status=400)
+# class RegisterRecommendBook(APIView):
+#     def post(self, request):
+#         # permission_class = [IsAuthenticated]  # is_manager로 구분해야 함.
+#         data = request.data
+#         isbn = data.get("isbn")
+#         try:
+#             RecommendedBook(isbns=isbn).save()
+#             return Response({"message": "성공적으로 등록되었습니다."}, status=200)
+#         except:
+#             return Response({"해당 isbn을 지닌 책이 없습니다."}, status=400)
 
 
 class CheckBookPresentCondition(APIView):
