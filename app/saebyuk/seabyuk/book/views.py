@@ -84,7 +84,7 @@ class ReturnBook(APIView):
                     isbn=i).update(borrow_available=True)
                 BorrowBooks.objects.filter(book=book).filter(
                     user=user).update(returned_at=datetime.now())
-            return Response("successfully edited", status=200)
+            return Response("successfully returned", status=200)
         except:
             return Response("sry", status=400)
 
