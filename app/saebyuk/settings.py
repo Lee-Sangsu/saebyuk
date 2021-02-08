@@ -1,6 +1,8 @@
 from pathlib import Path
 import os
 import environ
+import django_heroku
+django_heroku.settings(locals())
 
 env = environ.Env()
 environ.Env.read_env()
@@ -132,7 +134,7 @@ DATABASES = {
         "USER": env("SQL_USER"),
         "PASSWORD": env("SQL_PASSWORD"),
         "HOST": env("SQL_HOST"),
-        "PORT": '5432',
+        "PORT": env("SQL_PORT"),
     }
 }
 
