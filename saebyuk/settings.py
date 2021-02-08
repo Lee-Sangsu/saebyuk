@@ -2,14 +2,14 @@ from pathlib import Path
 import os
 import environ
 
-env = environ.Env()
-environ.Env.read_env()
+# env = environ.Env()
+# environ.Env.read_env()
 
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE",)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = True
 
@@ -102,8 +102,8 @@ SITE_ID = 1
 SOCIALACCOUNT_PROVIDERS = {
     'kakao': {
         'APP': {
-            'client_id': env('KAKAO_CLIENT_ID'),
-            'secret': env('KAKAO_SECRET'),
+            'client_id': os.environ.get('KAKAO_CLIENT_ID'),
+            'secret': os.environ.get('KAKAO_SECRET'),
             'key': ''
         }
     }
@@ -127,12 +127,12 @@ REST_FRAMEWORK = {
 # Database
 DATABASES = {
     'default': {
-        "ENGINE": env("SQL_ENGINE"),
-        "NAME": env("SQL_DATABASE"),
-        "USER": env("SQL_USER"),
-        "PASSWORD": env("SQL_PASSWORD"),
-        "HOST": env("SQL_HOST"),
-        "PORT": env("SQL_PORT"),
+        "ENGINE": os.environ.get("SQL_ENGINE"),
+        "NAME": os.environ.get("SQL_DATABASE"),
+        "USER": os.environ.get("SQL_USER"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD"),
+        "HOST": os.environ.get("SQL_HOST"),
+        "PORT": os.environ.get("SQL_PORT"),
     }
 }
 

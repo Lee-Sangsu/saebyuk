@@ -11,10 +11,7 @@ from .serializer import UserSerializer
 import urllib
 import requests
 import os
-import json
-import environ
-env = environ.Env()
-environ.Env.read_env()
+import json.encoder
 
 
 @api_view(['POST'])
@@ -47,7 +44,7 @@ def kakao_sign_up(request):
 @api_view(['POST'])
 @renderer_classes([JSONRenderer])
 def kakao_login(request):
-    app_rest_api_key = env('KAKAO_CLIENT_ID')
+    app_rest_api_key = os.environ.get('KAKAO_CLIENT_ID')
     body = json.loads(request.body)
     data = body.get("data")
     access_token = data.get("access_token")

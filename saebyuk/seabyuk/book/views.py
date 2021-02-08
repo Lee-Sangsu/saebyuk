@@ -9,9 +9,6 @@ from datetime import datetime
 from notion.client import NotionClient
 from notion.block import TodoBlock, TextBlock, PageBlock
 import json
-import environ
-env = environ.Env()
-environ.Env.read_env()
 
 
 class GetMainBooks(APIView):
@@ -174,11 +171,11 @@ def faq(request):
         text_body = data.get("body")
 
         # login
-        token_v2 = f"{env('NOTION_TOKEN')}"
+        token_v2 = f"{os.environ.get('NOTION_TOKEN')}"
         client = NotionClient(token_v2=token_v2)
 
         # faq 페이지 URL
-        url = f"{env('NOTION_PAGE_URL')}"
+        url = f"{os.environ.get('NOTION_PAGE_URL')}"
         page = client.get_block(url)
 
         new_page_block = page.children.add_new(PageBlock, title=title)
