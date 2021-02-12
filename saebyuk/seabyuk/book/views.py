@@ -9,22 +9,21 @@ from datetime import datetime
 from notion.client import NotionClient
 from notion.block import TodoBlock, TextBlock, PageBlock
 import json
+import os
 
 
 class GetMainBooks(APIView):
     def get(self, request):
         no_filter_books = Book.objects.all().order_by('-id')[:6]
         no_filtered_books = MainBookSerializer(no_filter_books, many=True)
-        # need to add 대출 가능 여부
-
         return Response(no_filtered_books.data, status=200)
 
 
 class FilterdBooks(APIView):
-    def get(self, request):
-        filter = request.data.get("filter")
-        filtered_books = BookInfoSerializer(
-            BookInfo.objects.filter(genre__contains=filter)).data  # annotate isbn 해야 해
+    def get(self, request, filter):
+        books = Book.objects.filter(book_info__keyword__contains=[filter])
+        filtered_books = MainBookSerializer(
+            books, many=True).data
         return Response(filtered_books, status=200)
 
 
@@ -118,9 +117,8 @@ class RequestBook(APIView):
 
 class RegisterNewBook(APIView):
     def post(self, request):
-        # permission_class = [IsAuthenticated]  # is_manager로 구분해야 함.
+        # permission_class = [IsAuthenticated]  # jwt로 구분해야 함.
         data = request.data.get("data")
-        # print(data)
         isbn = data.get("isbn")
         if Book.objects.filter(isbn=isbn).exists():
             return Response({"message": "해당 isbn을 지닌 책이 이미 있습니다."}, status=400)
@@ -145,20 +143,24 @@ class RegisterNewBook(APIView):
             return Response(status=200)
 
 
-# class RegisterRecommendBook(APIView):
-#     def post(self, request):
-#         # permission_class = [IsAuthenticated]  # is_manager로 구분해야 함.
-#         data = request.data
-#         isbn = data.get("isbn")
-#         try:
-#             RecommendedBook(isbns=isbn).save()
-#             return Response({"message": "성공적으로 등록되었습니다."}, status=200)
-#         except:
-#             return Response({"해당 isbn을 지닌 책이 없습니다."}, status=400)
+class SearchBook(APIView):
+    def get(self, request, query):
+        try:
+            search_res = Book.objects.filter(
+                Q(book_info__title__contains=query) | Q(book_info__author__contains=query))
+            serialized_book = MainBookSerializer(search_res, many=True)
+            return Response(serialized_book.data, status=200)
+        except:
+            return Response({"해당 검색어의 책이 없습니다."}, status=400)
 
 
 class CheckBookPresentCondition(APIView):
-    pass
+    def get(self, request, nickname):
+        borrowed_book = BorrowBooks.objects.filter(
+            user__g_school_nickname=nickname)
+        serialized_borrowed_books = BorrowedBooksSerializer(
+            borrowed_book, many=True)
+        return Response(serialized_borrowed_books.data, status=200)
 
 
 @api_view(['POST'])
