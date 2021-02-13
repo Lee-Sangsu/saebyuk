@@ -53,6 +53,8 @@ class LoveBook(models.Model):
         Book, on_delete=models.CASCADE, related_query_name='loved_book')
     user = models.ForeignKey(
         UserModel, on_delete=models.CASCADE, related_query_name='lover')
+    loved = models.BooleanField(default=False)
+    objects = models.Manager()
 
     class Meta:
         db_table = 'book_loved'

@@ -2,14 +2,15 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from ..models import Book, UserModel, BookInfo, BorrowBooks, BookComment, RequestedBook
+from ..models import Book, UserModel, BookInfo, BorrowBooks, BookComment, RequestedBook, LoveBook
 from rest_framework.permissions import IsAuthenticated
-from .serializers import MainBookSerializer,  BookInfoSerializer, BorrowedBooksSerializer
+from .serializers import MainBookSerializer,  BookInfoSerializer, BorrowedBooksSerializer, LovedBooksSerializer
 from datetime import datetime
 from notion.client import NotionClient
 from notion.block import TodoBlock, TextBlock, PageBlock
 import json
 import os
+from django.db.models import Q
 
 
 class GetMainBooks(APIView):
@@ -21,7 +22,7 @@ class GetMainBooks(APIView):
 
 class FilterdBooks(APIView):
     def get(self, request, filter):
-        books = Book.objects.filter(book_info__keyword__contains=[filter])
+        books = Book.objects.filter(book_info__genre__contains=[filter])
         filtered_books = MainBookSerializer(
             books, many=True).data
         return Response(filtered_books, status=200)
@@ -37,15 +38,36 @@ class SpecificInfoOfBook(APIView):
         return Response(book_info, status=200)
 
 
-class LoveBook(APIView):
+class RegisterLoveBook(APIView):
     def post(self, request):
         # permission_class = [IsAuthenticated]
-        g_nickname = request.data.get("g_school_nickname")
+        data = request.data.get("data")
+        g_nickname = data.get("g_school_nickname")
         user = UserModel.objects.get(g_school_nickname=g_nickname)
-        isbn = request.data.get("isbn")
-        book = Book.objects.filter(isbn=isbn)
-        LoveBook(book=book, user=user).save()
-        return Response("successfully written", status=200)
+        isbn = data.get("isbn")
+        book = Book.objects.get(isbn=isbn)
+        if LoveBook.objects.filter(book=book).filter(user=user).filter(loved=True).exists():
+            return Response("Already Loved", status=400)
+        else:
+            loved_book = LoveBook(book=book, user=user, loved=True)
+            loved_book.save()
+            return Response("successfully written", status=200)
+
+
+class DeleteUserLovedBooks(APIView):
+    def put(self, request):
+        data = request.data.get("data")
+        loved_book_id = data.get("love_id")
+        LoveBook.objects.filter(id=loved_book_id).update(loved=False)
+        return Response("취소 성공", status=200)
+
+
+class GetUserLovedBooks(APIView):
+    def get(self, request, nickname):
+        loved_books = LoveBook.objects.filter(
+            user__g_school_nickname=nickname).filter(loved=True)
+        serialized_data = LovedBooksSerializer(loved_books, many=True)
+        return Response(serialized_data.data, status=200)
 
 
 class BorrowBook(APIView):
