@@ -69,10 +69,7 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CORS_ALLOWED_ORIGINS = (
-    'http://localhost:8000',
-    'http://localhost:3000',
-    'http://192.168.219.101:3000',
-    'https://lee-sangsu.github.io/'
+    '*'
 )
 
 
