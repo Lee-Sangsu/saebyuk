@@ -64,8 +64,6 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://lee-sangsu.github.io'
@@ -74,6 +72,8 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'https://lee-sangsu.github.io'
 ]
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
 
 
 ROOT_URLCONF = 'saebyuk.urls'
