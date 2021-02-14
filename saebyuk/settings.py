@@ -10,9 +10,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = '*'
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -71,7 +71,8 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOWED_ORIGINS = (
     'http://localhost:8000',
     'http://localhost:3000',
-    'http://192.168.219.101:3000'
+    'http://192.168.219.101:3000',
+    'https://lee-sangsu.github.io/'
 )
 
 
