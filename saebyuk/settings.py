@@ -50,27 +50,12 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CSRF_HEADER_NAME = "HTTP_CMNAIMAKAASDFGBVIASFSDVXZVASDELFIEERNZREND"
-CSRF_COOKIE_NAME = "welcometothegschoolbabe"
+# CSRF_HEADER_NAME = "HTTP_CMNAIMAKAASDFGBVIASFSDVXZVASDELFIEERNZREND"
+# CSRF_COOKIE_NAME = "welcometothegschoolbabe"
 
 
 CORS_ORIGIN_ALLOW_ALL = True
-
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
-
-CORS_ALLOWED_ORIGINS = (
-    '*'
-)
+CORS_ALLOW_CREDENTIALS = True
 
 
 ROOT_URLCONF = 'saebyuk.urls'
